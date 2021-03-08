@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name"></string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="media_player">photomedia</string>
+    <string name="email">Email Id</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="new_here_create_account">Not Registred? Create Account</string>
+    <string name="forgot_password">Forgot Password</string>
+    <string name="create_your_account">Create Your Account</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="already_have_an_account_login_here">Already Have An Account? Login Here</string>
+</resources>

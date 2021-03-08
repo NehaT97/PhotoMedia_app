@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "620888866735",
+    "project_id": "photomedia-79738",
+    "storage_bucket": "photomedia-79738.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:620888866735:android:f1d210efaa6721aacd395a",
+        "android_client_info": {
+          "package_name": "com.bridgelabz.photomedia"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "620888866735-ngjs2pr20ac8g7vrq6lukffu2jh2psdl.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.bridgelabz.photomedia",
+            "certificate_hash": "a041480141eb24b2178f7285a4e80a02d8491ad0"
+          }
+        },
+        {
+          "client_id": "620888866735-bog8b0h9d4urb986ufn5lpc1piimgupn.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD9psnEw0DAV75ErExZHIEaxzZTBGm0NYs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "620888866735-bog8b0h9d4urb986ufn5lpc1piimgupn.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
