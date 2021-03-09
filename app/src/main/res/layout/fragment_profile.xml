@@ -3,13 +3,12 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
-    tools:context=".ui.homePage.view.HomeDashboardFragment">
+    tools:context=".ui.ProfileFragment">
 
-    <fragment
-        android:id="@+id/userPostRecyclerViewFragment"
+    <!-- TODO: Update blank fragment layout -->
+    <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:name="com.bridgelabz.photomedia.ui.homePage.view.RecyclerViewFragment"
-    />
+        android:text="@string/hello_blank_fragment" />
+
 </FrameLayout>

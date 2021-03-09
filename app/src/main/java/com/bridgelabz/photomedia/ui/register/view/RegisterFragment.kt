@@ -11,9 +11,9 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
-import androidx.navigation.findNavController
 import com.bridgelabz.photomedia.R
 import com.bridgelabz.photomedia.data.model.RegisterDTO
+import com.bridgelabz.photomedia.ui.login.view.LoginFragment
 import com.bridgelabz.photomedia.ui.register.viewmodel.RegisterViewModel
 
 
@@ -46,7 +46,9 @@ class RegisterFragment : Fragment() {
                 return@observe
             if (it) {
                 Toast.makeText(context, "Registration Successful", Toast.LENGTH_SHORT).show()
-                view?.findNavController()?.navigate(R.id.loginFragment)
+                val loginFragment = LoginFragment()
+                requireActivity().supportFragmentManager.beginTransaction().replace(
+                    R.id.activity_main_nav_host_fragment,loginFragment).commit()
                 return@observe
             }
             Toast.makeText(context, "Registration Failed", Toast.LENGTH_SHORT).show()
@@ -82,7 +84,10 @@ class RegisterFragment : Fragment() {
     private fun goToLoginPageTextViewListener() {
         gotoLoginPage?.setOnClickListener {
             Toast.makeText(context, "Navigating To Login Page", Toast.LENGTH_SHORT).show()
-            view?.findNavController()?.navigate(R.id.loginFragment)
+            val loginFragment = LoginFragment()
+            requireActivity().supportFragmentManager.beginTransaction().replace(
+                R.id.activity_main_nav_host_fragment,loginFragment).commit()
+
         }
     }
 }

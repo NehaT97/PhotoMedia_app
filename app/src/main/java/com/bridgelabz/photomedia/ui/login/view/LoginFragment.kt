@@ -14,11 +14,11 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
-import androidx.navigation.findNavController
 import com.bridgelabz.photomedia.R
-import com.bridgelabz.photomedia.data.externalApis.HttpRequestService
 import com.bridgelabz.photomedia.data.model.User
+import com.bridgelabz.photomedia.ui.homePage.view.HomeDashboardFragment
 import com.bridgelabz.photomedia.ui.login.viewmodel.LoginViewModel
+import com.bridgelabz.photomedia.ui.register.view.RegisterFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
@@ -35,7 +35,6 @@ class LoginFragment : Fragment() {
     var googleLoginButton:SignInButton  ? = null
     private lateinit var googleSignInClient: GoogleSignInClient
     val RC_SIGN_IN: Int = 123
-    val httpRequestService = HttpRequestService()
     var token:String? = null
     private var loggedInUser: User? = null
 
@@ -82,7 +81,10 @@ class LoginFragment : Fragment() {
             when (it) {
                 true -> {
                     Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
-                    view?.findNavController()?.navigate(R.id.homePageFragment)
+                   // view?.findNavController()?.navigate(R.id.homePageFragment)
+                    //val homeDashboardFragment = HomeDashboardFragment()
+                    requireActivity().supportFragmentManager.beginTransaction().replace(R.id.activity_main_nav_host_fragment,HomeDashboardFragment()).commit()
+
                 }
                 false -> {
                     Toast.makeText(context, "Login Failed", Toast.LENGTH_SHORT).show()
@@ -141,10 +143,11 @@ class LoginFragment : Fragment() {
     private fun setRegisterTextViewListeners() {
         registerAccountTextView?.setOnClickListener {
             Toast.makeText(context, "Navigating To Register", Toast.LENGTH_SHORT).show()
-            view?.findNavController()?.navigate(R.id.registerFragment)
+             val registerFragment = RegisterFragment()
+            requireActivity().supportFragmentManager.beginTransaction().replace(R.id.activity_main_nav_host_fragment,
+                registerFragment).addToBackStack("registerFragment").commit()
         }
     }
-
 
     private fun setLoginButtonListeners() {
         loginButton?.setOnClickListener {
