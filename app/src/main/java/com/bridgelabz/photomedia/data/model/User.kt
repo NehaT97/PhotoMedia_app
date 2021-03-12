@@ -4,7 +4,7 @@ class User(
     val id: String,
     val firstName: String,
     val lastName: String,
-    val username : String,
+    val userName : String,
     val email: String,
     val emailVerified: Boolean,
     val password: String,

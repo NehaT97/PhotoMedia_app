@@ -56,8 +56,8 @@ class RegisterFragment : Fragment() {
     }
 
     private fun initiateViewContents(view: View?) {
-        firstNameTextView = view?.findViewById<EditText>(R.id.firstName)
-        lastNameTextView = view?.findViewById<EditText>(R.id.lastName)
+        firstNameTextView = view?.findViewById<EditText>(R.id.userName)
+        lastNameTextView = view?.findViewById<EditText>(R.id.firstName)
         passWordTextView = view?.findViewById<EditText>(R.id.registerPassword)
         emailTextView = view?.findViewById<EditText>(R.id.registerEmail)
         signUpButton = view?.findViewById<Button>(R.id.signUpButton)

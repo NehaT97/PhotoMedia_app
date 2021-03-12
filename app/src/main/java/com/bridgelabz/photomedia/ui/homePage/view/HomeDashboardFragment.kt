@@ -9,9 +9,10 @@ import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bridgelabz.photomedia.R
-import com.bridgelabz.photomedia.data.adapter.PhotoAdapter
+import com.bridgelabz.photomedia.data.adapter.homepage.PhotoAdapter
+import com.bridgelabz.photomedia.ui.addPost.view.AddPostFragment
+import com.bridgelabz.photomedia.ui.profile.view.ProfileFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
-import java.util.*
 
 class HomeDashboardFragment : Fragment() {
 
@@ -41,24 +42,29 @@ class HomeDashboardFragment : Fragment() {
 
     private fun setbottomNavigationBarListeners() {
         bottomNavigationBar?.setOnNavigationItemSelectedListener {
-                when(it.itemId){
+                when(it.itemId) {
                     R.id.nav_home -> {
-                        Toast.makeText(context,"Home",Toast.LENGTH_SHORT).show()
                         return@setOnNavigationItemSelectedListener true
                     }
                     R.id.nav_addPost -> {
-                        Toast.makeText(context,"Add Post",Toast.LENGTH_SHORT).show()
+                        requireActivity().supportFragmentManager.beginTransaction()
+                            .replace(R.id.activity_main_nav_host_fragment, AddPostFragment()).addToBackStack("")
+                            .commit()
+                        Toast.makeText(context, "Add Post", Toast.LENGTH_SHORT).show()
                         return@setOnNavigationItemSelectedListener true
 
                     }
                     R.id.nav_profile -> {
+                        requireActivity().supportFragmentManager.beginTransaction()
+                            .replace(R.id.activity_main_nav_host_fragment, ProfileFragment()).addToBackStack("")
+                            .commit()
                         Toast.makeText(context,"Navigate to profile page",Toast.LENGTH_SHORT).show()
                         return@setOnNavigationItemSelectedListener true
-
                     }
                 }
             false
         }
+
     }
 
     private fun initViewContents(view:View) {
@@ -68,7 +74,17 @@ class HomeDashboardFragment : Fragment() {
     }
 
     private fun initPostRecyclerView() {
-        photoAdapter = PhotoAdapter(listOf("Akshay", "Neha", "Shubham", "Thakur", "Neha1","Pratibha"))
+        photoAdapter =
+            PhotoAdapter(
+                listOf(
+                    "Akshay",
+                    "Neha",
+                    "Shubham",
+                    "Thakur",
+                    "Neha1",
+                    "Pratibha"
+                )
+            )
         photoRecyclerView?.adapter = photoAdapter
         photoRecyclerView?.layoutManager = LinearLayoutManager(context)
     }

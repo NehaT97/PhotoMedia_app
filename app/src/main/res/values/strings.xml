@@ -9,8 +9,19 @@
     <string name="new_here_create_account">Not Registred? Create Account</string>
     <string name="forgot_password">Forgot Password</string>
     <string name="create_your_account">Create Your Account</string>
-    <string name="first_name">First Name</string>
-    <string name="last_name">Last Name</string>
+    <string name="user_name">UserName</string>
     <string name="sign_up">Sign Up</string>
     <string name="already_have_an_account_login_here">Already Have An Account? Login Here</string>
+    <string name="username">username</string>
+    <string name="posts">Posts</string>
+    <string name="_1">0</string>
+    <string name="followers">Followers</string>
+    <string name="_0">0</string>
+    <string name="following">Following</string>
+    <string name="_2">0</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="first_name">First Name</string>
+    <string name="bio">Bio</string>
+    <string name="last_name">Last Name</string>
+    <string name="full_name">Full Name</string>
 </resources>

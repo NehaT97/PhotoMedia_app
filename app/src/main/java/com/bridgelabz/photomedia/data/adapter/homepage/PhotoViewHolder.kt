@@ -1,4 +1,4 @@
-package com.bridgelabz.photomedia.data.adapter
+package com.bridgelabz.photomedia.data.adapter.homepage
 
 import android.view.View
 import android.widget.Button

@@ -32,7 +32,7 @@ class HttpRequestService {
                 response.append(inputLine)
             }
             input.close()
-            Log.i("API Response", "Post API Response : ${response.toString()}")
+            Log.i("Login API Response", "Post API Response : ${response.toString()}")
             response.toString()
         } else {
             ""
@@ -72,6 +72,7 @@ class HttpRequestService {
             result.append("=")
             result.append(URLEncoder.encode(value.toString(), "UTF-8"))
         }
+
         return result.toString()
     }
 }

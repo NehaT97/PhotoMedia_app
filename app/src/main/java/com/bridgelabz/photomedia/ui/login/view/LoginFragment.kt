@@ -81,8 +81,6 @@ class LoginFragment : Fragment() {
             when (it) {
                 true -> {
                     Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
-                   // view?.findNavController()?.navigate(R.id.homePageFragment)
-                    //val homeDashboardFragment = HomeDashboardFragment()
                     requireActivity().supportFragmentManager.beginTransaction().replace(R.id.activity_main_nav_host_fragment,HomeDashboardFragment()).commit()
 
                 }
@@ -96,8 +94,8 @@ class LoginFragment : Fragment() {
             if (it == null) {
                 return@observe
             } else {
-                loggedInUser = it
-                Log.i("Logged in User", "$loggedInUser")
+
+                Log.i("User Details[loginFragment]", "${loggedInUser?.email},${loggedInUser?.firstName}, ${loggedInUser?.lastName},${loggedInUser?.userName}")
             }
         }
     }
@@ -105,8 +103,6 @@ class LoginFragment : Fragment() {
     @Override
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        /*token = data?.getStringExtra("token")
-        Log.i("token","$token")*/
         if (requestCode == RC_SIGN_IN) {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             val account = task.getResult(ApiException::class.java)!!

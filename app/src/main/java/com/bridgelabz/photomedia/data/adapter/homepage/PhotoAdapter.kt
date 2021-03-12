@@ -1,4 +1,4 @@
-package com.bridgelabz.photomedia.data.adapter
+package com.bridgelabz.photomedia.data.adapter.homepage
 
 import android.util.Log
 import android.view.LayoutInflater
@@ -10,7 +10,9 @@ class PhotoAdapter(private var postList: List<Any>) : RecyclerView.Adapter<Photo
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
         val displayView = LayoutInflater.from(parent.context).inflate(R.layout.fragment_post_item, parent, false)
-        return PhotoViewHolder(displayView)
+        return PhotoViewHolder(
+            displayView
+        )
     }
 
     override fun getItemCount(): Int {
@@ -19,6 +21,5 @@ class PhotoAdapter(private var postList: List<Any>) : RecyclerView.Adapter<Photo
     }
 
     override fun onBindViewHolder(holder: PhotoViewHolder, position: Int) {
-        val post = postList[position]
     }
 }

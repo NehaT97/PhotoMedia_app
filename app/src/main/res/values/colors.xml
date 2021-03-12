@@ -7,6 +7,7 @@
     <color name="teal_700">#FF018786</color>
     <color name="appBarColor">#018383</color>
     <color name="Grey">#8B000000</color>
+    <color name="Grey_Color">#19000000</color>
     <color name="black">#E2000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="colorPrimary">#6200EE</color>
