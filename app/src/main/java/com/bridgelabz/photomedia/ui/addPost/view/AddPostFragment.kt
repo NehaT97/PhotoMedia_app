@@ -132,12 +132,6 @@ class AddPostFragment : Fragment() {
                     Log.i("data","${data.extras?.get("data")}")
                     Log.e("Data[data]","${data.data}")
 
-                  /*  val file = File(currentPhotoPath)
-                    selectImage?.setImageURI(Uri.fromFile(file))
-                    captureImage?.visibility = GONE
-                    selectImageFromGalary?.visibility = GONE
-                    Log.i("Image URI", "${Uri.fromFile(file)}")*/
-
                 }
 
                 OPEN_GALARY -> if (resultCode == Activity.RESULT_OK && data != null) {
@@ -187,26 +181,7 @@ class AddPostFragment : Fragment() {
             // display error state to the user
             e.printStackTrace()
         }
-        /*Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            activity?.packageManager?.let {
-                takePictureIntent.resolveActivity(it)?.also {
-                    val photoFile: File? = try {
-                        createImageFile()
-                    } catch (ex: IOException) {
-                        null
-                    }
-                    photoFile?.also {
-                        val photoURI: Uri = FileProvider.getUriForFile(
-                            this.context!!,
-                            "com.bridgelabz.photomedia.android.fileprovider", it
-                        )
-                        Log.i("PhotoUri", "$photoURI")
-                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-                    }
-                }
-            }
-        }*/
+
     }
 
 
