@@ -5,8 +5,10 @@ import android.net.Uri
 class Post
     (val userId:String = "",
      val postId:String = "",
-     val imageUri:Uri,
      val imageFileName:String = "",
-     val postUri:Uri
+     val postUri:Uri,
+     val isLiked:Boolean = false,
+     val isCommented:Boolean = false
+
 ){
 }

@@ -1,18 +1,22 @@
 package com.bridgelabz.photomedia.ui.register.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.bridgelabz.photomedia.data.IUserRepository
+import com.bridgelabz.photomedia.data.UserRepository
 import com.bridgelabz.photomedia.data.externalApis.UserApiService
-import com.bridgelabz.photomedia.data.model.RegisterDTO
+import com.bridgelabz.photomedia.data.model.User
 
 class RegisterViewModel : ViewModel() {
 
     val registerSuccessFul = MutableLiveData<Boolean>()
     private val userApiService: UserApiService = UserApiService()
+    private val userRepository:IUserRepository = UserRepository()
 
-    fun registerUser(registerDTO: RegisterDTO): Unit {
-        userApiService.register(registerDTO) {
-            registerSuccessFul.value = it != null
+    fun registerUser(user: User): Unit {
+        userRepository.registerUserToFirebase(user){
+            registerSuccessFul.value = true
         }
     }
 }

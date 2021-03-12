@@ -17,15 +17,9 @@ class LoginViewModel : ViewModel() {
 
 
     fun loginUser(email: String, password: String): Unit {
-        userApiService.login(email, password) {
+        userRepository.authenticateUserByLogin(email, password) {
             Log.i("User logeed in view model", "$it")
-            user.value = it
-            Log.i("User logeed in [User.Value]]**", "${user.value}")
-            loginSuccessFull.value = it != null
-            Log.i("User logeed [loginSuccessFull.value]email", "${it?.email}")
-            Log.i("User logeed [loginSuccessFull.value]username", "${it?.userName}")
-            Log.i("User logeed [loginSuccessFull.value]firstname", "${it?.firstName}")
-            Log.i("User logeed [loginSuccessFull.value]lastname", "${it?.lastName}")
+            loginSuccessFull.value = true
 
         }
     }

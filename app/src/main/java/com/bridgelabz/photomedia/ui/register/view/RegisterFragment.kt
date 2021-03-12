@@ -13,6 +13,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import com.bridgelabz.photomedia.R
 import com.bridgelabz.photomedia.data.model.RegisterDTO
+import com.bridgelabz.photomedia.data.model.User
 import com.bridgelabz.photomedia.ui.login.view.LoginFragment
 import com.bridgelabz.photomedia.ui.register.viewmodel.RegisterViewModel
 
@@ -22,7 +23,7 @@ class RegisterFragment : Fragment() {
     private var registerViewModel: RegisterViewModel? = null
     private var firstNameTextView: EditText? = null
     private var lastNameTextView: EditText? = null
-    private var usernameTextView: EditText? = null
+    private var userNameTextView: EditText? = null
     private var passWordTextView: EditText? = null
     private var emailTextView: EditText? = null
     private var signUpButton: Button? = null
@@ -42,22 +43,26 @@ class RegisterFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         registerViewModel = ViewModelProvider(this).get(RegisterViewModel::class.java)
         registerViewModel?.registerSuccessFul?.observe(viewLifecycleOwner) {
-            if (it == null)
-                return@observe
-            if (it) {
-                Toast.makeText(context, "Registration Successful", Toast.LENGTH_SHORT).show()
-                val loginFragment = LoginFragment()
-                requireActivity().supportFragmentManager.beginTransaction().replace(
-                    R.id.activity_main_nav_host_fragment,loginFragment).commit()
-                return@observe
+            if (it == null) return@observe
+
+            when (it) {
+                true -> {
+                    Toast.makeText(context, "Registration Successful", Toast.LENGTH_SHORT).show()
+                    requireActivity().supportFragmentManager.beginTransaction()
+                        .replace(R.id.activity_main_nav_host_fragment, LoginFragment()).commit()
+                    return@observe
+                }
+                false -> {
+                    Toast.makeText(context, "Registration Failed", Toast.LENGTH_SHORT).show()
+                }
             }
-            Toast.makeText(context, "Registration Failed", Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun initiateViewContents(view: View?) {
-        firstNameTextView = view?.findViewById<EditText>(R.id.userName)
-        lastNameTextView = view?.findViewById<EditText>(R.id.firstName)
+        userNameTextView = view?.findViewById<EditText>(R.id.userName)
+        firstNameTextView = view?.findViewById<EditText>(R.id.firstName)
+        lastNameTextView = view?.findViewById<EditText>(R.id.lastName)
         passWordTextView = view?.findViewById<EditText>(R.id.registerPassword)
         emailTextView = view?.findViewById<EditText>(R.id.registerEmail)
         signUpButton = view?.findViewById<Button>(R.id.signUpButton)
@@ -71,13 +76,14 @@ class RegisterFragment : Fragment() {
 
     private fun signUpButtonClickListener() {
         signUpButton?.setOnClickListener {
+            val userName = userNameTextView?.text.toString()
             val firstName = firstNameTextView?.text.toString()
             val lastName = lastNameTextView?.text.toString()
             val emailId = emailTextView?.text.toString()
             val password = passWordTextView?.text.toString()
 
-            val registerDTO = RegisterDTO(firstName, lastName, emailId, emailId, password)
-            registerViewModel?.registerUser(registerDTO)
+            val user = User(userName, firstName, lastName, emailId, password)
+            registerViewModel?.registerUser(user)
         }
     }
 
@@ -86,7 +92,8 @@ class RegisterFragment : Fragment() {
             Toast.makeText(context, "Navigating To Login Page", Toast.LENGTH_SHORT).show()
             val loginFragment = LoginFragment()
             requireActivity().supportFragmentManager.beginTransaction().replace(
-                R.id.activity_main_nav_host_fragment,loginFragment).commit()
+                R.id.activity_main_nav_host_fragment, loginFragment
+            ).commit()
 
         }
     }

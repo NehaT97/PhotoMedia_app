@@ -9,14 +9,24 @@ import com.bridgelabz.photomedia.data.model.PostRepository
 
 class AddPostViewModel : ViewModel() {
     val imageUploadedStatus = MutableLiveData<Boolean>()
-    val post = MutableLiveData<Post>()
+    val postStatus = MutableLiveData<Boolean>()
 
     private val postRepository: IPostRepository = PostRepository()
 
-    fun uploadImage(imageFileName: String, selectedImageUri: Uri){
+    fun uploadImageFirebaseStorage(imageFileName: String, selectedImageUri: Uri){
         postRepository.uploadImage(imageFileName,selectedImageUri){
-            imageUploadedStatus.value = it
+            imageUploadedStatus.value = true
         }
     }
 
+    fun uploadPostToFirestore(post:Post){
+       postRepository.UploadPostToFirestore(post){
+           postStatus.value = true
+       }
+    }
+
+    fun getUserId(): String? {
+        val userId = postRepository.getUser()?.uid
+        return userId
+    }
 }

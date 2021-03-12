@@ -94,8 +94,8 @@ class LoginFragment : Fragment() {
             if (it == null) {
                 return@observe
             } else {
-
-                Log.i("User Details[loginFragment]", "${loggedInUser?.email},${loggedInUser?.firstName}, ${loggedInUser?.lastName},${loggedInUser?.userName}")
+                    loggedInUser = it
+                Log.i("User Details[loginFragment]", "${loggedInUser?.email}")
             }
         }
     }

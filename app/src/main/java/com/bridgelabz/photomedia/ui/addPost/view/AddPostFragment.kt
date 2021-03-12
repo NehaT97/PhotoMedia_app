@@ -2,7 +2,9 @@ package com.bridgelabz.photomedia.ui.addPost.view
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.content.ActivityNotFoundException
 import android.content.Intent
+import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -20,6 +22,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import com.bridgelabz.photomedia.R
+import com.bridgelabz.photomedia.data.model.Post
 import com.bridgelabz.photomedia.ui.addPost.viewmodel.AddPostViewModel
 import com.bridgelabz.photomedia.ui.homePage.view.HomeDashboardFragment
 import com.bridgelabz.photomedia.ui.profile.view.ProfileFragment
@@ -31,6 +34,7 @@ import java.util.*
 
 
 class AddPostFragment : Fragment() {
+
 
     private var addPostViewModel: AddPostViewModel? = null
     lateinit var currentPhotoPath: String
@@ -64,18 +68,21 @@ class AddPostFragment : Fragment() {
                 return@observe
 
             when (it) {
-                true -> {
-                    Log.i("Toast Display","Yes")
-                    Toast.makeText(context, "Image Uploaded Successfully", Toast.LENGTH_SHORT).show()
+                true -> Toast.makeText(context, "Image Uploaded Successfully", Toast.LENGTH_SHORT).show()
 
-                }
-                false -> {
-                    Log.i("Toast Display1","not")
-                    Toast.makeText(context, "Image Not Uploaded", Toast.LENGTH_SHORT).show()
-                }
+                false -> Toast.makeText(context, "Image Not Uploaded", Toast.LENGTH_SHORT).show()
             }
         }
 
+        addPostViewModel?.postStatus?.observe(viewLifecycleOwner){
+            if (it == null)
+                return@observe
+
+            when (it) {
+                true -> Log.i("Post Status:Success","Post Document is Saved")
+                false -> Log.i("Post Status:Failed","Post Document is Saved")
+            }
+        }
     }
 
     private fun initViewContents(view: View?) {
@@ -90,7 +97,6 @@ class AddPostFragment : Fragment() {
     private fun setInitialViewListeners() {
         setbottomNavigationBarListeners()
         setImageListeners()
-
     }
 
     private fun setImageListeners() {
@@ -104,7 +110,11 @@ class AddPostFragment : Fragment() {
         }
 
         saveImage?.setOnClickListener {
-            addPostViewModel?.uploadImage(imageFileName!!,selectedImageUri!!)
+            addPostViewModel?.uploadImageFirebaseStorage(imageFileName!!,selectedImageUri!!)
+
+            val userID = addPostViewModel?.getUserId()
+            //val post = Post()
+            //addPostViewModel?.uploadPostToFirestore(post)
         }
     }
 
@@ -114,11 +124,19 @@ class AddPostFragment : Fragment() {
         if (resultCode != Activity.RESULT_CANCELED) {
             when (requestCode) {
                 REQUEST_IMAGE_CAPTURE -> if (resultCode == Activity.RESULT_OK && data != null) {
-                    val file = File(currentPhotoPath)
+
+                    val imageBitmap = data.extras?.get("data") as Bitmap
+                    selectImage?.setImageBitmap(imageBitmap)
+                    captureImage?.visibility = GONE
+                    selectImageFromGalary?.visibility = GONE
+                    Log.i("data","${data.extras?.get("data")}")
+                    Log.e("Data[data]","${data.data}")
+
+                  /*  val file = File(currentPhotoPath)
                     selectImage?.setImageURI(Uri.fromFile(file))
                     captureImage?.visibility = GONE
                     selectImageFromGalary?.visibility = GONE
-                    Log.i("Image URI", "${Uri.fromFile(file)}")
+                    Log.i("Image URI", "${Uri.fromFile(file)}")*/
 
                 }
 
@@ -161,7 +179,15 @@ class AddPostFragment : Fragment() {
 
     @SuppressLint("QueryPermissionsNeeded")
     private fun dispatchTakePictureIntent() {
-        Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
+
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        try {
+            startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
+        } catch (e: ActivityNotFoundException) {
+            // display error state to the user
+            e.printStackTrace()
+        }
+        /*Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
             activity?.packageManager?.let {
                 takePictureIntent.resolveActivity(it)?.also {
                     val photoFile: File? = try {
@@ -180,7 +206,7 @@ class AddPostFragment : Fragment() {
                     }
                 }
             }
-        }
+        }*/
     }
 
 
