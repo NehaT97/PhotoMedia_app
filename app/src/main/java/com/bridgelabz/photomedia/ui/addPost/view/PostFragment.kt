@@ -9,6 +9,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
+import android.security.keystore.UserNotAuthenticatedException
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,26 +18,28 @@ import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.ImageView
 import android.widget.Toast
-import androidx.core.content.FileProvider
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import com.bridgelabz.photomedia.R
 import com.bridgelabz.photomedia.data.model.Post
-import com.bridgelabz.photomedia.ui.addPost.viewmodel.AddPostViewModel
+import com.bridgelabz.photomedia.data.model.User
+import com.bridgelabz.photomedia.ui.addPost.viewmodel.PostViewModel
 import com.bridgelabz.photomedia.ui.homePage.view.HomeDashboardFragment
+import com.bridgelabz.photomedia.ui.login.viewmodel.LoginViewModel
 import com.bridgelabz.photomedia.ui.profile.view.ProfileFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
+import com.google.firebase.auth.FirebaseUser
 import java.io.File
 import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 
 
-class AddPostFragment : Fragment() {
+class PostFragment : Fragment() {
 
-
-    private var addPostViewModel: AddPostViewModel? = null
+    private var postViewModel: PostViewModel? = null
+    private var loginViewModel: LoginViewModel? = null
     lateinit var currentPhotoPath: String
     private var addPostBottomNavigationBar: BottomNavigationView? = null
     private var selectImage: ImageView? = null
@@ -46,8 +49,11 @@ class AddPostFragment : Fragment() {
     private var selectImageFromGalary: ImageView? = null
     private val REQUEST_IMAGE_CAPTURE = 0
     private val OPEN_GALARY = 1
-    private var imageFileName:String? = null
-    private var selectedImageUri:Uri? = null
+    private var imageFileName: String? = null
+    private var selectedImageUri: Uri? = null
+    private var loggedAuthUser: FirebaseUser? = null
+    private var loggedUser: User? = null
+    private var uploadedPostImageUri: Uri? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -62,25 +68,47 @@ class AddPostFragment : Fragment() {
     @Override
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        addPostViewModel = ViewModelProvider(this).get(AddPostViewModel::class.java)
-        addPostViewModel?.imageUploadedStatus?.observe(viewLifecycleOwner){
-            if (it == null)
+        initPostViewModelContents()
+        initLoginViewModelContents()
+    }
+
+    private fun initLoginViewModelContents() {
+        loginViewModel = ViewModelProvider(this).get(LoginViewModel::class.java)
+
+        loggedAuthUser = loginViewModel?.currentAuthUser()
+        Log.i("Current Logged User", "$loggedAuthUser")
+        loginViewModel?.fetchUserByUserId(loggedAuthUser?.uid.orEmpty())
+
+        loginViewModel?.loggedUser?.observe(viewLifecycleOwner) {
+            if (it == null) {
                 return@observe
+            } else {
+                loggedUser = it
+            }
+        }
+    }
 
-            when (it) {
-                true -> Toast.makeText(context, "Image Uploaded Successfully", Toast.LENGTH_SHORT).show()
-
-                false -> Toast.makeText(context, "Image Not Uploaded", Toast.LENGTH_SHORT).show()
+    private fun initPostViewModelContents() {
+        postViewModel = ViewModelProvider(this).get(PostViewModel::class.java)
+        postViewModel?.uploadedPostImageUri?.observe(viewLifecycleOwner) {
+            if (it == null) {
+                return@observe
+            } else {
+                Log.i("Post URL ", "${it.toString()}")
+                uploadedPostImageUri = it
             }
         }
 
-        addPostViewModel?.postStatus?.observe(viewLifecycleOwner){
+        postViewModel?.postStatus?.observe(viewLifecycleOwner) {
             if (it == null)
                 return@observe
-
             when (it) {
-                true -> Log.i("Post Status:Success","Post Document is Saved")
-                false -> Log.i("Post Status:Failed","Post Document is Saved")
+                true -> {
+                    Toast.makeText(context, "Post Uploaded", Toast.LENGTH_SHORT).show()
+                }
+                false -> {
+                    Toast.makeText(context, "Post Upload Failed", Toast.LENGTH_SHORT).show()
+                }
             }
         }
     }
@@ -110,9 +138,21 @@ class AddPostFragment : Fragment() {
         }
 
         saveImage?.setOnClickListener {
-            addPostViewModel?.uploadImageFirebaseStorage(imageFileName!!,selectedImageUri!!)
+            val userID = loggedAuthUser?.uid
+            if (userID == null) {
+                Toast.makeText(context, "Unable to upload post", Toast.LENGTH_SHORT).show()
+            } else {
+                Log.i("Logged User from DB", "$loggedUser")
+                if (loggedUser != null) {
+                    Log.i("Logged User", "$loggedUser")
+                    val userName = loggedUser?.userName.orEmpty()
+                    val userProfileImageUrl = loggedUser?.profileImageUrl
+                    val postId = UUID.randomUUID().toString()
+                    var postToUpload = Post(userID.orEmpty(), postId, userName, userProfileImageUrl.toString(), "")
+                    postViewModel?.uploadImageFirebaseStorage(postToUpload, imageFileName!!, selectedImageUri!!)
+                }
+            }
 
-            val userID = addPostViewModel?.getUserId()
             //val post = Post()
             //addPostViewModel?.uploadPostToFirestore(post)
         }
@@ -129,14 +169,14 @@ class AddPostFragment : Fragment() {
                     selectImage?.setImageBitmap(imageBitmap)
                     captureImage?.visibility = GONE
                     selectImageFromGalary?.visibility = GONE
-                    Log.i("data","${data.extras?.get("data")}")
-                    Log.e("Data[data]","${data.data}")
+                    Log.i("data", "${data.extras?.get("data")}")
+                    Log.e("Data[data]", "${data.data}")
 
-                  /*  val file = File(currentPhotoPath)
-                    selectImage?.setImageURI(Uri.fromFile(file))
-                    captureImage?.visibility = GONE
-                    selectImageFromGalary?.visibility = GONE
-                    Log.i("Image URI", "${Uri.fromFile(file)}")*/
+                    /*  val file = File(currentPhotoPath)
+                      selectImage?.setImageURI(Uri.fromFile(file))
+                      captureImage?.visibility = GONE
+                      selectImageFromGalary?.visibility = GONE
+                      Log.i("Image URI", "${Uri.fromFile(file)}")*/
 
                 }
 
@@ -223,7 +263,7 @@ class AddPostFragment : Fragment() {
 
                 R.id.nav_addPost -> {
                     requireActivity().supportFragmentManager.beginTransaction()
-                        .replace(R.id.activity_main_nav_host_fragment, AddPostFragment())
+                        .replace(R.id.activity_main_nav_host_fragment, PostFragment())
                         .addToBackStack("")
                         .commit()
                     Toast.makeText(context, "Add Post", Toast.LENGTH_SHORT).show()

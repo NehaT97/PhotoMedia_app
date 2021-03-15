@@ -239,20 +239,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginTop="10dp"
-                android:background="@color/Grey_Color">
+                android:background="@color/white">
 
-               <!-- <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerView"
-                    android:layout_width="match_parent"
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/userPostRecyclerView"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:scrollbars="vertical"
                     app:layout_constraintBottom_toTopOf="@+id/profileBottomNavView"
-                    app:layout_constraintEnd_toEndOf=""
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/mid2_bar"
-                    app:layout_constraintVertical_bias="0.22"
                     tools:ignore="NotSibling" />
--->
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </LinearLayout>

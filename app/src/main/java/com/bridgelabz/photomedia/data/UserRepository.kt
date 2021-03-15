@@ -25,33 +25,49 @@ class UserRepository() : IUserRepository {
         fireStore = FirebaseFirestore.getInstance()
     }
 
+    override fun getCurrentAuthUser(): FirebaseUser? {
+        Log.i("Current User", "${firebaseAuth.currentUser}")
+        return firebaseAuth.currentUser
+    }
 
     override fun registerUserToFirebase(user: User, listener: (Boolean) -> Unit) {
         firebaseAuth.createUserWithEmailAndPassword(user.email, user.password)
             .addOnCompleteListener {
-                if (it.isSuccessful) addUserDetailsToFirestore(user, listener)
-
-            }
-    }
-
-    override fun authenticateUserByLogin(
-        email: String,
-        password: String,
-        listener: (Boolean) -> Unit
-    ) {
-        Log.i("currentUser1:", firebaseAuth.currentUser.email)
-        firebaseAuth.signInWithEmailAndPassword(email, password)
-            .addOnCompleteListener {
+                if (it.isSuccessful)  {
+                    val authUser = it.result!!.user
+                    user.userId = authUser.uid
+                    addUserDetailsToFirestore(user, listener)
+                } else if (it.isCanceled) {
+                    Log.e("Register User", "${it.exception?.message}", it.exception)
+                }
                 listener(it.isSuccessful)
             }
     }
 
-    override fun googleLogin(idToken: String, listener: (Boolean) -> Unit) {
+    override fun loginByEmailIdAndPassword(
+        email: String,
+        password: String,
+        listener: (FirebaseUser?) -> Unit
+    ) {
+        firebaseAuth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    listener(it.result!!.user)
+                } else {
+                    listener(null)
+                }
+            }
+    }
+
+    override fun loginByGoogle(idToken: String, listener: (FirebaseUser?) -> Unit) {
         val credential = GoogleAuthProvider.getCredential(idToken, null)
         firebaseAuth.signInWithCredential(credential).addOnCompleteListener {
-            listener(it.isSuccessful)
+            if (it.isSuccessful) {
+                listener(it.result!!.user)
+            } else {
+                listener(null)
+            }
         }
-
     }
 
     override fun addUserDetailsToFirestore(userDetails: User, listener: (Boolean) -> Unit) {
@@ -64,5 +80,22 @@ class UserRepository() : IUserRepository {
             .set(user).addOnCompleteListener {
                 listener(it.isSuccessful)
             }
+    }
+
+    override fun fetchUserByUserId(userId: String, listener: (User?) -> Unit) {
+        fireStore.collection("USER_COLLECTION").document(userId).get().addOnCompleteListener {
+            if (it.isSuccessful) {
+                listener(it.result!!.toObject(User::class.java))
+            } else {
+                listener(null)
+            }
+        }
+    }
+
+    override fun setProfileImage(imageUrl: String, userId: String, listener: (Boolean) -> Unit) {
+        fireStore.collection("USER_COLLECTION").document(userId)
+            .update("profileImageUrl", imageUrl).addOnCompleteListener {
+                listener(it.isSuccessful)
+        }
     }
 }

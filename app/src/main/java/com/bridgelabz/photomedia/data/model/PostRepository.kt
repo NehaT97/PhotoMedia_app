@@ -3,17 +3,16 @@ package com.bridgelabz.photomedia.data.model
 import android.net.Uri
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.storage.FirebaseStorage
 import com.google.firebase.storage.StorageReference
 
- class PostRepository(): IPostRepository {
+class PostRepository() : IPostRepository {
 
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var fireStore: FirebaseFirestore
     private lateinit var storageRef: StorageReference
-     var postUri:Uri? = null
+    var postUri: Uri? = null
 
     init {
         initService()
@@ -25,29 +24,50 @@ import com.google.firebase.storage.StorageReference
         storageRef = FirebaseStorage.getInstance().reference
     }
 
-     override fun getUser(): FirebaseUser? {
-         return firebaseAuth.currentUser
-     }
-
-
-     override fun uploadImage(imageFileName:String,imageUri: Uri,listener:(Boolean) -> Unit) {
+    override fun uploadImage(imageFileName: String, imageUri: Uri, listener: (Uri?) -> Unit) {
+        Log.i("Original Uri", "$imageUri")
         val fileRef = storageRef.child("Post_Collection$imageFileName")
-        fileRef.putFile(imageUri)
-            .addOnSuccessListener {
-                fileRef.downloadUrl.addOnSuccessListener {
-                    postUri = it
-                    Log.d("Image Upload","onSuccess: Uploaded Image Uri is : ${it.toString()}")
+        fileRef.putFile(imageUri).addOnCompleteListener {
+            if (it.isSuccessful) {
+                fileRef.downloadUrl.addOnCompleteListener { ref ->
+                    if (ref.isSuccessful) {
+                        listener(ref.result!!)
+                    } else if (ref.isCanceled) {
+                        Log.e("Download URI Error", "${ref.exception}")
+                        listener(null)
+                    }
                 }
+            } else if (it.isCanceled) {
+                Log.e("Download URI Error", "${it.exception}")
+                listener(null)
+            }
+        }
+    }
 
-            }.addOnFailureListener {
-                Log.d("Image Upload","onFailed: Uploaded Image Uri is : ${it.toString()}")
+    override fun uploadPost(post: Post, listener: (Boolean) -> Unit) {
+        fireStore.collection("POST_COLLECTION").document(post.postId).set(post)
+            .addOnCompleteListener {
+                if (it.isSuccessful) {
+                    listener(it.isSuccessful)
+                } else if (it.isCanceled) {
+                    Log.e("Exception caught", "${it.exception?.message}")
+                }
+                listener(false)
             }
     }
 
-     override fun UploadPostToFirestore(post: Post,listener: (Boolean) -> Unit) {
-        fireStore.collection("POST_COLLECTION").add(post)
+    override fun fetchAllPostByUserIds(userIds: List<String>, listener: (List<Post>) -> Unit) {
+        fireStore.collection("POST_COLLECTION").whereIn("userId", userIds)
+            .get()
             .addOnCompleteListener {
-                listener (it.isSuccessful)
+                if (it.isSuccessful) {
+                    val posts :List<Post> = ArrayList(it.result!!.toObjects(Post::class.java))
+                    Log.i("Fetched Documents", "$posts")
+                    listener(posts)
+                } else if (it.isCanceled) {
+                    listener(ArrayList())
+                    Log.e("Exception caught", "${it.exception}")
+                }
             }
-     }
- }
+    }
+}

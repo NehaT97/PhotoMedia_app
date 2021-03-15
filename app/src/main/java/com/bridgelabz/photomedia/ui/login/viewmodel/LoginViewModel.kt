@@ -5,28 +5,40 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.bridgelabz.photomedia.data.IUserRepository
 import com.bridgelabz.photomedia.data.UserRepository
-import com.bridgelabz.photomedia.data.externalApis.UserApiService
 import com.bridgelabz.photomedia.data.model.User
+import com.google.firebase.auth.FirebaseUser
 
 class LoginViewModel : ViewModel() {
     val loginSuccessFull = MutableLiveData<Boolean>()
-    val user = MutableLiveData<User>()
+    val loggedAuthUser = MutableLiveData<FirebaseUser>()
+    val loggedUser = MutableLiveData<User>()
 
     private val userRepository: IUserRepository = UserRepository()
-    private val userApiService: UserApiService = UserApiService()
+    //private val userApiService: UserApiService = UserApiService()
 
+
+    fun currentAuthUser(): FirebaseUser? {
+        return userRepository.getCurrentAuthUser()
+    }
 
     fun loginUser(email: String, password: String): Unit {
-        userRepository.authenticateUserByLogin(email, password) {
-            Log.i("User logeed in view model", "$it")
-            loginSuccessFull.value = true
-
+        userRepository.loginByEmailIdAndPassword(email, password) {
+            loginSuccessFull.value = it != null
+            loggedAuthUser.value = it
         }
     }
 
-    fun loginUserByGoogle(idToken: String): Unit{
-        userRepository.googleLogin(idToken){
-            loginSuccessFull.value = it
+    fun loginUserByGoogle(idToken: String): Unit {
+        userRepository.loginByGoogle(idToken) {
+            loginSuccessFull.value = it != null
+            loggedAuthUser.value = it
+        }
+    }
+
+    fun fetchUserByUserId(userId: String): Unit {
+        userRepository.fetchUserByUserId(userId) {
+            Log.i("Fetch User By user Id", "$it")
+            loggedUser.value = it
         }
     }
 }

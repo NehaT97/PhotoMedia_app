@@ -24,6 +24,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.FirebaseUser
 
 
 class LoginFragment : Fragment() {
@@ -36,7 +37,7 @@ class LoginFragment : Fragment() {
     private lateinit var googleSignInClient: GoogleSignInClient
     val RC_SIGN_IN: Int = 123
     var token:String? = null
-    private var loggedInUser: User? = null
+    private var loggedInUser: FirebaseUser? = null
 
     @Override
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,8 +82,6 @@ class LoginFragment : Fragment() {
             when (it) {
                 true -> {
                     Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
-                    requireActivity().supportFragmentManager.beginTransaction().replace(R.id.activity_main_nav_host_fragment,HomeDashboardFragment()).commit()
-
                 }
                 false -> {
                     Toast.makeText(context, "Login Failed", Toast.LENGTH_SHORT).show()
@@ -90,11 +89,17 @@ class LoginFragment : Fragment() {
             }
         }
 
-        loginViewModel?.user?.observe(viewLifecycleOwner) {
+        loginViewModel?.loggedAuthUser?.observe(viewLifecycleOwner) {
             if (it == null) {
                 return@observe
             } else {
-                    loggedInUser = it
+                loggedInUser = it
+                val homeDashboardFragment = HomeDashboardFragment()
+                val bundle = Bundle()
+                bundle.putString("userId", it.uid)
+                Log.i("UID", it.uid)
+                homeDashboardFragment.arguments = bundle
+                requireActivity().supportFragmentManager.beginTransaction().replace(R.id.activity_main_nav_host_fragment, homeDashboardFragment).commit()
                 Log.i("User Details[loginFragment]", "${loggedInUser?.email}")
             }
         }

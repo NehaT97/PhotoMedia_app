@@ -16,7 +16,7 @@ class RegisterViewModel : ViewModel() {
 
     fun registerUser(user: User): Unit {
         userRepository.registerUserToFirebase(user){
-            registerSuccessFul.value = true
+            registerSuccessFul.value = it
         }
     }
 }
