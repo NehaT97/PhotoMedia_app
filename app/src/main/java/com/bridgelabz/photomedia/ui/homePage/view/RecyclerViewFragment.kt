@@ -12,6 +12,6 @@ class RecyclerViewFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_recyclerview, container, false)
+        return inflater.inflate(R.layout.fragment_homepagedashboard_recyclerview, container, false)
     }
 }

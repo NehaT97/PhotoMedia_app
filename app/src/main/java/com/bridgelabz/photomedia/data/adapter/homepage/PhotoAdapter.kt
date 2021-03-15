@@ -10,7 +10,7 @@ import com.bridgelabz.photomedia.data.model.Post
 class PhotoAdapter(private var postList: List<Post>, private var currentLoginUserId:String) : RecyclerView.Adapter<PhotoViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhotoViewHolder {
-        val displayView = LayoutInflater.from(parent.context).inflate(R.layout.fragment_post_item, parent, false)
+        val displayView = LayoutInflater.from(parent.context).inflate(R.layout.fragment_homepost_item_cardview, parent, false)
         return PhotoViewHolder(displayView, parent.context)
     }
 

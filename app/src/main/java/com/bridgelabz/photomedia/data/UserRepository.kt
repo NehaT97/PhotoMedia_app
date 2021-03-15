@@ -1,6 +1,7 @@
 package com.bridgelabz.photomedia.data
 
 import android.util.Log
+import com.bridgelabz.photomedia.data.model.Post
 import com.bridgelabz.photomedia.data.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -9,6 +10,7 @@ import com.google.firebase.firestore.FirebaseFirestore
 
 class UserRepository() : IUserRepository {
     private val EMAIL: String = "email"
+    private val USERID: String = "userid"
     private val USERNAME: String = "userName"
     private val FIRSTNAME: String = "firstName"
     private val LASTNAME: String = "lastName"
@@ -71,13 +73,9 @@ class UserRepository() : IUserRepository {
     }
 
     override fun addUserDetailsToFirestore(userDetails: User, listener: (Boolean) -> Unit) {
-        val user: MutableMap<String, Any> = HashMap()
-        user[EMAIL] = userDetails.email
-        user[USERNAME] = userDetails.userName
-        user[FIRSTNAME] = userDetails.firstName
-        user[LASTNAME] = userDetails.lastName
+        userDetails.password = ""
         fireStore.collection("USER_COLLECTION").document(firebaseAuth?.currentUser.uid)
-            .set(user).addOnCompleteListener {
+            .set(userDetails).addOnCompleteListener {
                 listener(it.isSuccessful)
             }
     }
@@ -98,4 +96,10 @@ class UserRepository() : IUserRepository {
                 listener(it.isSuccessful)
         }
     }
+
+    override fun fetchAllUsersByUserId(listener: (List<User>) -> Unit) {
+        TODO("Not yet implemented")
+    }
+
+
 }

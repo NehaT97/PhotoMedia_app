@@ -1,4 +1,4 @@
-package com.bridgelabz.photomedia.ui.login.viewmodel
+package com.bridgelabz.photomedia.ui.loginPage.viewmodel
 
 import android.util.Log
 import androidx.lifecycle.MutableLiveData

@@ -1,4 +1,4 @@
-package com.bridgelabz.photomedia.ui.profile.view
+package com.bridgelabz.photomedia.ui.profilePage.view
 
 import android.app.Activity
 import android.content.Intent
@@ -13,21 +13,21 @@ import android.webkit.MimeTypeMap
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
+import androidx.core.graphics.green
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.bridgelabz.photomedia.R
-import com.bridgelabz.photomedia.data.adapter.homepage.PhotoAdapter
 import com.bridgelabz.photomedia.data.adapter.profilepage.UserPhotoAdapter
 import com.bridgelabz.photomedia.data.model.Post
 import com.bridgelabz.photomedia.data.model.User
-import com.bridgelabz.photomedia.ui.addPost.viewmodel.PostViewModel
+import com.bridgelabz.photomedia.ui.addPostPage.viewmodel.PostViewModel
 import com.bridgelabz.photomedia.ui.homePage.view.HomeDashboardFragment
-import com.bridgelabz.photomedia.ui.login.viewmodel.LoginViewModel
-import com.bridgelabz.photomedia.ui.profile.viewmodel.ProfileViewModel
+import com.bridgelabz.photomedia.ui.loginPage.viewmodel.LoginViewModel
+import com.bridgelabz.photomedia.ui.profilePage.viewmodel.ProfileViewModel
+import com.bridgelabz.photomedia.ui.searchPage.view.SearchUserFragment
 import com.bumptech.glide.Glide
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseUser
@@ -196,10 +196,19 @@ class ProfileFragment : Fragment() {
             when (it.itemId) {
 
                 R.id.nav_home -> {
+                    R.id.nav_home.green
                     requireActivity().supportFragmentManager.beginTransaction()
                         .replace(R.id.activity_main_nav_host_fragment, HomeDashboardFragment())
                         .commit()
                     Toast.makeText(context, "Navigating Home", Toast.LENGTH_SHORT).show()
+                    return@setOnNavigationItemSelectedListener true
+                }
+
+                R.id.search_user ->{
+                    requireActivity().supportFragmentManager.beginTransaction()
+                        .replace(R.id.activity_main_nav_host_fragment, SearchUserFragment())
+                        .commit()
+                    Toast.makeText(context, "Search Users", Toast.LENGTH_SHORT).show()
                     return@setOnNavigationItemSelectedListener true
                 }
             }

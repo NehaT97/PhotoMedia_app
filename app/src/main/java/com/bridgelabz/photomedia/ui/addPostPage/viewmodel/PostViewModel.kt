@@ -1,14 +1,11 @@
-package com.bridgelabz.photomedia.ui.addPost.viewmodel
+package com.bridgelabz.photomedia.ui.addPostPage.viewmodel
 
 import android.net.Uri
-import android.util.Log
-import android.widget.Toast
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.bridgelabz.photomedia.data.model.IPostRepository
 import com.bridgelabz.photomedia.data.model.Post
 import com.bridgelabz.photomedia.data.model.PostRepository
-import java.util.*
 
 class PostViewModel : ViewModel() {
     val uploadedPostImageUri = MutableLiveData<Uri>()

@@ -1,4 +1,4 @@
-package com.bridgelabz.photomedia.ui.login.view
+package com.bridgelabz.photomedia.ui.loginPage.view
 
 import android.content.Intent
 import android.os.Bundle
@@ -15,10 +15,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import com.bridgelabz.photomedia.R
-import com.bridgelabz.photomedia.data.model.User
 import com.bridgelabz.photomedia.ui.homePage.view.HomeDashboardFragment
-import com.bridgelabz.photomedia.ui.login.viewmodel.LoginViewModel
-import com.bridgelabz.photomedia.ui.register.view.RegisterFragment
+import com.bridgelabz.photomedia.ui.loginPage.viewmodel.LoginViewModel
+import com.bridgelabz.photomedia.ui.registerPage.view.RegisterFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions

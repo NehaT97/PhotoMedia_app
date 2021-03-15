@@ -9,7 +9,7 @@
 
     <fragment
         android:id="@+id/activity_main_nav_host_fragment"
-        android:name="com.bridgelabz.photomedia.ui.login.view.LoginFragment"
+        android:name="com.bridgelabz.photomedia.ui.loginPage.view.LoginFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         app:layout_behavior="@string/appbar_scrolling_view_behavior"

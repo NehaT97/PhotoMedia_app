@@ -1,4 +1,4 @@
-package com.bridgelabz.photomedia.ui.addPost.view
+package com.bridgelabz.photomedia.ui.addPostPage.view
 
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -9,7 +9,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.security.keystore.UserNotAuthenticatedException
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,6 +16,8 @@ import android.view.View.GONE
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
 import android.widget.ImageView
+import android.widget.ProgressBar
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -24,10 +25,11 @@ import androidx.lifecycle.observe
 import com.bridgelabz.photomedia.R
 import com.bridgelabz.photomedia.data.model.Post
 import com.bridgelabz.photomedia.data.model.User
-import com.bridgelabz.photomedia.ui.addPost.viewmodel.PostViewModel
+import com.bridgelabz.photomedia.ui.addPostPage.viewmodel.PostViewModel
 import com.bridgelabz.photomedia.ui.homePage.view.HomeDashboardFragment
-import com.bridgelabz.photomedia.ui.login.viewmodel.LoginViewModel
-import com.bridgelabz.photomedia.ui.profile.view.ProfileFragment
+import com.bridgelabz.photomedia.ui.loginPage.viewmodel.LoginViewModel
+import com.bridgelabz.photomedia.ui.profilePage.view.ProfileFragment
+import com.bridgelabz.photomedia.ui.searchPage.view.SearchUserFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseUser
 import java.io.File
@@ -46,6 +48,8 @@ class PostFragment : Fragment() {
     private var captureImage: ImageView? = null
     private var closeImage: ImageView? = null
     private var saveImage: ImageView? = null
+    private var uploadImageProgressBar:ProgressBar? = null
+    private var imageUploading:TextView? = null
     private var selectImageFromGalary: ImageView? = null
     private val REQUEST_IMAGE_CAPTURE = 0
     private val OPEN_GALARY = 1
@@ -54,6 +58,7 @@ class PostFragment : Fragment() {
     private var loggedAuthUser: FirebaseUser? = null
     private var loggedUser: User? = null
     private var uploadedPostImageUri: Uri? = null
+    private var progress:Int = 0
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -104,7 +109,11 @@ class PostFragment : Fragment() {
                 return@observe
             when (it) {
                 true -> {
-                    Toast.makeText(context, "Post Uploaded", Toast.LENGTH_SHORT).show()
+                    //Toast.makeText(context, "Post Uploaded", Toast.LENGTH_SHORT).show()
+                    imageUploading?.visibility = View.VISIBLE
+                    uploadImageProgressBar?.visibility = View.GONE
+                    requireActivity().supportFragmentManager.beginTransaction()
+                        .replace(R.id.activity_main_nav_host_fragment,HomeDashboardFragment()).commit()
                 }
                 false -> {
                     Toast.makeText(context, "Post Upload Failed", Toast.LENGTH_SHORT).show()
@@ -120,6 +129,9 @@ class PostFragment : Fragment() {
         selectImageFromGalary = view?.findViewById(R.id.selectImageFromGalary)
         closeImage = view?.findViewById(R.id.closeImage)
         saveImage = view?.findViewById(R.id.saveImage)
+        uploadImageProgressBar = view?.findViewById(R.id.progressBar_addPost)
+        imageUploading = view?.findViewById(R.id.uploading)
+
     }
 
     private fun setInitialViewListeners() {
@@ -148,14 +160,31 @@ class PostFragment : Fragment() {
                     val userName = loggedUser?.userName.orEmpty()
                     val userProfileImageUrl = loggedUser?.profileImageUrl
                     val postId = UUID.randomUUID().toString()
-                    var postToUpload = Post(userID.orEmpty(), postId, userName, userProfileImageUrl.toString(), "")
+                    uploadImageProgressBar?.visibility = View.VISIBLE
+                    setProgressValue(progress)
+                    val postToUpload = Post(userID.orEmpty(), postId, userName, userProfileImageUrl.toString(), "")
                     postViewModel?.uploadImageFirebaseStorage(postToUpload, imageFileName!!, selectedImageUri!!)
                 }
             }
-
-            //val post = Post()
-            //addPostViewModel?.uploadPostToFirestore(post)
         }
+
+        closeImage?.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.activity_main_nav_host_fragment,PostFragment()).commit()
+        }
+    }
+
+    private fun setProgressValue(progress: Int) {
+        val thread = Thread(Runnable {
+            try {
+                uploadImageProgressBar?.progress = progress
+                Thread.sleep(1000)
+            } catch (e: InterruptedException) {
+                e.printStackTrace()
+            }
+            setProgressValue(progress + 10)
+        })
+        thread.start()
     }
 
     @Override
@@ -172,12 +201,6 @@ class PostFragment : Fragment() {
                     Log.i("data", "${data.extras?.get("data")}")
                     Log.e("Data[data]", "${data.data}")
 
-                    /*  val file = File(currentPhotoPath)
-                      selectImage?.setImageURI(Uri.fromFile(file))
-                      captureImage?.visibility = GONE
-                      selectImageFromGalary?.visibility = GONE
-                      Log.i("Image URI", "${Uri.fromFile(file)}")*/
-
                 }
 
                 OPEN_GALARY -> if (resultCode == Activity.RESULT_OK && data != null) {
@@ -189,7 +212,6 @@ class PostFragment : Fragment() {
                     selectImage?.setImageURI(selectedImageUri)
                     selectImageFromGalary?.visibility = GONE
                     captureImage?.visibility = GONE
-
                 }
             }
         }
@@ -199,7 +221,6 @@ class PostFragment : Fragment() {
         val contentResolver = activity?.contentResolver
         val mime = MimeTypeMap.getSingleton()
         return mime.getExtensionFromMimeType(contentResolver?.getType(contentUri as Uri))
-
     }
 
 
@@ -227,26 +248,7 @@ class PostFragment : Fragment() {
             // display error state to the user
             e.printStackTrace()
         }
-        /*Intent(MediaStore.ACTION_IMAGE_CAPTURE).also { takePictureIntent ->
-            activity?.packageManager?.let {
-                takePictureIntent.resolveActivity(it)?.also {
-                    val photoFile: File? = try {
-                        createImageFile()
-                    } catch (ex: IOException) {
-                        null
-                    }
-                    photoFile?.also {
-                        val photoURI: Uri = FileProvider.getUriForFile(
-                            this.context!!,
-                            "com.bridgelabz.photomedia.android.fileprovider", it
-                        )
-                        Log.i("PhotoUri", "$photoURI")
-                        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, photoURI)
-                        startActivityForResult(takePictureIntent, REQUEST_IMAGE_CAPTURE)
-                    }
-                }
-            }
-        }*/
+
     }
 
 
@@ -258,6 +260,14 @@ class PostFragment : Fragment() {
                         .replace(R.id.activity_main_nav_host_fragment, HomeDashboardFragment())
                         .commit()
                     Toast.makeText(context, "Navigating Home", Toast.LENGTH_SHORT).show()
+                    return@setOnNavigationItemSelectedListener true
+                }
+
+                R.id.search_user ->{
+                    requireActivity().supportFragmentManager.beginTransaction()
+                        .replace(R.id.activity_main_nav_host_fragment, SearchUserFragment())
+                        .commit()
+                    Toast.makeText(context, "Search Users", Toast.LENGTH_SHORT).show()
                     return@setOnNavigationItemSelectedListener true
                 }
 

@@ -12,4 +12,5 @@ interface IUserRepository {
     fun fetchUserByUserId(userId: String, listener: (User?) -> Unit)
     fun getCurrentAuthUser(): FirebaseUser?
     fun setProfileImage(imageUrl: String, userId: String, listener: (Boolean) -> Unit)
+    fun fetchAllUsersByUserId(listener: (List<User>) -> Unit)
 }

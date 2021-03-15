@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.graphics.green
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
@@ -15,10 +16,11 @@ import com.bridgelabz.photomedia.R
 import com.bridgelabz.photomedia.data.adapter.homepage.PhotoAdapter
 import com.bridgelabz.photomedia.data.model.Post
 import com.bridgelabz.photomedia.data.model.User
-import com.bridgelabz.photomedia.ui.addPost.view.PostFragment
-import com.bridgelabz.photomedia.ui.addPost.viewmodel.PostViewModel
-import com.bridgelabz.photomedia.ui.login.viewmodel.LoginViewModel
-import com.bridgelabz.photomedia.ui.profile.view.ProfileFragment
+import com.bridgelabz.photomedia.ui.addPostPage.view.PostFragment
+import com.bridgelabz.photomedia.ui.addPostPage.viewmodel.PostViewModel
+import com.bridgelabz.photomedia.ui.loginPage.viewmodel.LoginViewModel
+import com.bridgelabz.photomedia.ui.profilePage.view.ProfileFragment
+import com.bridgelabz.photomedia.ui.searchPage.view.SearchUserFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseUser
 
@@ -100,6 +102,16 @@ class HomeDashboardFragment : Fragment() {
                 R.id.nav_home -> {
                     return@setOnNavigationItemSelectedListener true
                 }
+
+                R.id.search_user ->{
+                    requireActivity().supportFragmentManager.beginTransaction()
+                        .replace(R.id.activity_main_nav_host_fragment,SearchUserFragment())
+                        .addToBackStack("")
+                        .commit()
+                    Toast.makeText(context, "Search Users", Toast.LENGTH_SHORT).show()
+                    return@setOnNavigationItemSelectedListener true
+                }
+
                 R.id.nav_addPost -> {
                     requireActivity().supportFragmentManager.beginTransaction()
                         .replace(R.id.activity_main_nav_host_fragment, PostFragment())
