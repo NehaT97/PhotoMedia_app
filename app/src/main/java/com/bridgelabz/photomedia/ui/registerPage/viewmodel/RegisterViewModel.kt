@@ -1,6 +1,5 @@
-package com.bridgelabz.photomedia.ui.register.viewmodel
+package com.bridgelabz.photomedia.ui.registerPage.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.bridgelabz.photomedia.data.IUserRepository
@@ -16,7 +15,7 @@ class RegisterViewModel : ViewModel() {
 
     fun registerUser(user: User): Unit {
         userRepository.registerUserToFirebase(user){
-            registerSuccessFul.value = true
+            registerSuccessFul.value = it
         }
     }
 }

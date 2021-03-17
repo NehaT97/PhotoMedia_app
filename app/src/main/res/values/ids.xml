@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="image_grid_view_button" type="id" />
+    <item name="postImage" type="id"></item>
+    <item name="postMenu" type="id" />
+</resources>

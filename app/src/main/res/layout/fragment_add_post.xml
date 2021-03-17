@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/white"
-    tools:context=".ui.addPost.view.AddPostFragment">
+    tools:context=".ui.addPostPage.view.PostFragment">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout_addPost"
@@ -80,6 +80,38 @@
         app:layout_constraintBottom_toBottomOf="@+id/selectImage"
         app:layout_constraintTop_toTopOf="@+id/selectImage"
         android:src="@drawable/galary"/>
+
+
+    <ProgressBar
+        android:id="@+id/progressBar_addPost"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100"
+        android:progress="0"
+        android:visibility="gone"
+        android:background="@color/black"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        app:layout_constraintBottom_toTopOf="@+id/addPostBottomNavView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/selectImage"
+        tools:visibility="visible" />
+
+    <TextView
+        android:id="@+id/uploading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="IMAGE UPLOADED..."
+        android:textColor="@color/black"
+        android:textSize="14dp"
+        android:visibility="gone"
+        tools:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/addPostBottomNavView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/progressBar_addPost" />
 
 
     <com.google.android.material.bottomnavigation.BottomNavigationView

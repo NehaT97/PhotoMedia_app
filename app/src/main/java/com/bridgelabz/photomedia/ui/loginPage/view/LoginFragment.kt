@@ -1,6 +1,8 @@
-package com.bridgelabz.photomedia.ui.login.view
+package com.bridgelabz.photomedia.ui.loginPage.view
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.StrictMode
 import android.util.Log
@@ -15,15 +17,15 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import com.bridgelabz.photomedia.R
-import com.bridgelabz.photomedia.data.model.User
 import com.bridgelabz.photomedia.ui.homePage.view.HomeDashboardFragment
-import com.bridgelabz.photomedia.ui.login.viewmodel.LoginViewModel
-import com.bridgelabz.photomedia.ui.register.view.RegisterFragment
+import com.bridgelabz.photomedia.ui.loginPage.viewmodel.LoginViewModel
+import com.bridgelabz.photomedia.ui.registerPage.view.RegisterFragment
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
 import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
+import com.google.firebase.auth.FirebaseUser
 
 
 class LoginFragment : Fragment() {
@@ -36,7 +38,7 @@ class LoginFragment : Fragment() {
     private lateinit var googleSignInClient: GoogleSignInClient
     val RC_SIGN_IN: Int = 123
     var token:String? = null
-    private var loggedInUser: User? = null
+    private var loggedInUser: FirebaseUser? = null
 
     @Override
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -62,12 +64,12 @@ class LoginFragment : Fragment() {
     }
 
     private fun configurationGoogleSignIn() {
-            val gso =
-                GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(getString(R.string.default_web_client_id))
-                    .requestEmail()
-                    .build()
-            googleSignInClient = context?.let { GoogleSignIn.getClient(it, gso) }!!
+        val gso =
+            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+        googleSignInClient = context?.let { GoogleSignIn.getClient(it, gso) }!!
 
     }
 
@@ -81,8 +83,6 @@ class LoginFragment : Fragment() {
             when (it) {
                 true -> {
                     Toast.makeText(context, "Login Successful", Toast.LENGTH_SHORT).show()
-                    requireActivity().supportFragmentManager.beginTransaction().replace(R.id.activity_main_nav_host_fragment,HomeDashboardFragment()).commit()
-
                 }
                 false -> {
                     Toast.makeText(context, "Login Failed", Toast.LENGTH_SHORT).show()
@@ -90,11 +90,23 @@ class LoginFragment : Fragment() {
             }
         }
 
-        loginViewModel?.user?.observe(viewLifecycleOwner) {
+        loginViewModel?.loggedAuthUser?.observe(viewLifecycleOwner) {
             if (it == null) {
                 return@observe
             } else {
-                    loggedInUser = it
+                loggedInUser = it
+
+                val sharedPreferences = context?.getSharedPreferences("MyPref", Context.MODE_PRIVATE)
+                val editor= sharedPreferences?.edit()
+                editor?.putString("loggedUserUID", loggedInUser?.uid)
+                editor?.apply()
+
+                val homeDashboardFragment = HomeDashboardFragment()
+                val bundle = Bundle()
+                bundle.putString("userId", it.uid)
+                Log.i("UID", it.uid)
+                homeDashboardFragment.arguments = bundle
+                requireActivity().supportFragmentManager.beginTransaction().replace(R.id.activity_main_nav_host_fragment, homeDashboardFragment).commit()
                 Log.i("User Details[loginFragment]", "${loggedInUser?.email}")
             }
         }
@@ -139,7 +151,7 @@ class LoginFragment : Fragment() {
     private fun setRegisterTextViewListeners() {
         registerAccountTextView?.setOnClickListener {
             Toast.makeText(context, "Navigating To Register", Toast.LENGTH_SHORT).show()
-             val registerFragment = RegisterFragment()
+            val registerFragment = RegisterFragment()
             requireActivity().supportFragmentManager.beginTransaction().replace(R.id.activity_main_nav_host_fragment,
                 registerFragment).addToBackStack("registerFragment").commit()
         }

@@ -1,4 +1,4 @@
-package com.bridgelabz.photomedia.ui.register.view
+package com.bridgelabz.photomedia.ui.registerPage.view
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,10 +12,9 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
 import com.bridgelabz.photomedia.R
-import com.bridgelabz.photomedia.data.model.RegisterDTO
 import com.bridgelabz.photomedia.data.model.User
-import com.bridgelabz.photomedia.ui.login.view.LoginFragment
-import com.bridgelabz.photomedia.ui.register.viewmodel.RegisterViewModel
+import com.bridgelabz.photomedia.ui.loginPage.view.LoginFragment
+import com.bridgelabz.photomedia.ui.registerPage.viewmodel.RegisterViewModel
 
 
 class RegisterFragment : Fragment() {

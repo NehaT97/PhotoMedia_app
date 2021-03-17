@@ -4,11 +4,17 @@ import android.net.Uri
 import java.net.URI
 
 class User(
-    val userName : String = "",
+    val userName: String = "",
     val firstName: String = "",
     val lastName: String = "",
     val email: String = "",
-    val password: String = ""
-){
+    var password: String = "",
+    var profileImageUrl: String = "",
+    var posts: List<String> = ArrayList(),
+    var followers: List<String> = ArrayList(),
+    var following: List<String> = ArrayList(),
+    var userId: String= "",
+    var bio: String= ""
+    ){
 
 }
