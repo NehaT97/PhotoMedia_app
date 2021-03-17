@@ -15,9 +15,7 @@ class PhotoViewHolder(itemView: View, val context: Context) : RecyclerView.ViewH
 
     private val postUserProfileImage: ImageView = itemView.findViewById(R.id.postUserProfileImage)
     private val postImage: ImageView = itemView.findViewById(R.id.postImage)
-    private val postMenu: Button = itemView.findViewById(R.id.postMenu)
     private val postLikeButton: Button = itemView.findViewById(R.id.likeButton)
-    private val postCommentButton: Button = itemView.findViewById(R.id.commentButton)
     private val postUserNameTextView: TextView = itemView.findViewById(R.id.postUserName)
 
     fun bind(post: Post, currentLoginUserId: String) {

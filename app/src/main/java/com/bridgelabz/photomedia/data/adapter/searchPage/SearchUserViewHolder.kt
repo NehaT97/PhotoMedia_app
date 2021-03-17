@@ -9,7 +9,7 @@ import com.bridgelabz.photomedia.R
 import com.bridgelabz.photomedia.data.model.User
 import com.bumptech.glide.Glide
 
-class SearchUserViewHolder(itemView: View):RecyclerView.ViewHolder(itemView) {
+class SearchUserViewHolder(itemView: View, val loggedUserUid: String):RecyclerView.ViewHolder(itemView) {
     private val searchUserProfileImage:ImageView = itemView.findViewById(R.id.searchUserProfileImage)
     private val searchUserUserName:TextView = itemView.findViewById(R.id.searchUserUserName)
     private val followButton:Button = itemView.findViewById(R.id.Follow)
@@ -19,6 +19,10 @@ class SearchUserViewHolder(itemView: View):RecyclerView.ViewHolder(itemView) {
 
         if (!searchUser.profileImageUrl.isNullOrEmpty()){
             Glide.with(itemView.context).load(searchUser.profileImageUrl).into(searchUserProfileImage)
+        }
+
+        if (searchUser.followers.contains(loggedUserUid)) {
+            followButton.text = "UNFOLLOW"
         }
 
     }

@@ -12,5 +12,35 @@ interface IUserRepository {
     fun fetchUserByUserId(userId: String, listener: (User?) -> Unit)
     fun getCurrentAuthUser(): FirebaseUser?
     fun setProfileImage(imageUrl: String, userId: String, listener: (Boolean) -> Unit)
-    fun fetchAllUsersByUserId(listener: (List<User>) -> Unit)
+    fun updateUserDetails(
+        firstName: String,
+        lastName: String,
+        bio: String,
+        listener: (Boolean) -> Unit
+    )
+
+    fun fetchAllUsers(listener: (List<User>?) -> Unit)
+    fun addFollower(
+        currentLoggedInUserId: String,
+        followToUserId: String,
+        listener: (Boolean) -> Unit
+    )
+
+    fun followUser(
+        currentLoggedInUserId: String,
+        followedToUserId: String,
+        listener: (Boolean) -> Unit
+    )
+
+    fun removeFollower(
+        currentLoggedInUserId: String,
+        followToUserId: String,
+        listener: (Boolean) -> Unit
+    )
+
+    fun unfollowUser(
+    currentLoggedInUserId: String,
+    followedToUserId: String,
+    listener: (Boolean) -> Unit
+    )
 }

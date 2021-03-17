@@ -10,6 +10,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.MimeTypeMap
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
@@ -24,6 +25,7 @@ import com.bridgelabz.photomedia.data.adapter.profilepage.UserPhotoAdapter
 import com.bridgelabz.photomedia.data.model.Post
 import com.bridgelabz.photomedia.data.model.User
 import com.bridgelabz.photomedia.ui.addPostPage.viewmodel.PostViewModel
+import com.bridgelabz.photomedia.ui.editProfilePage.view.EditProfileFragment
 import com.bridgelabz.photomedia.ui.homePage.view.HomeDashboardFragment
 import com.bridgelabz.photomedia.ui.loginPage.viewmodel.LoginViewModel
 import com.bridgelabz.photomedia.ui.profilePage.viewmodel.ProfileViewModel
@@ -57,6 +59,7 @@ class ProfileFragment : Fragment() {
     private var bioTextView: TextView? = null
     private var photoRecyclerView :RecyclerView? = null
     private var photoAdapter :UserPhotoAdapter? = null
+    private var editProfile:Button? = null
 
     private var posts: List<Post> = ArrayList()
 
@@ -174,6 +177,7 @@ class ProfileFragment : Fragment() {
         totalFollowingTextView = view?.findViewById(R.id.total_followings)
         fullNameTextView = view?.findViewById(R.id.full_name_profile_fragment)
         bioTextView = view?.findViewById(R.id.bio_profile_fragment)
+        editProfile = view?.findViewById(R.id.edit_account_setting)
 
         photoRecyclerView = view?.findViewById(R.id.userPostRecyclerView)
     }
@@ -181,6 +185,14 @@ class ProfileFragment : Fragment() {
     private fun setInitialViewListeners() {
         setbottomNavigationBarListeners()
         setProfileImageListeners()
+        editProfileButtonListener()
+    }
+
+    private fun editProfileButtonListener() {
+        editProfile?.setOnClickListener {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.activity_main_nav_host_fragment,EditProfileFragment()).addToBackStack("").commit()
+        }
     }
 
     private fun setProfileImageListeners() {

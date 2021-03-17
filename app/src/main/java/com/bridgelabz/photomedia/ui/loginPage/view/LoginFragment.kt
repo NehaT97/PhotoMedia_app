@@ -1,6 +1,8 @@
 package com.bridgelabz.photomedia.ui.loginPage.view
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.StrictMode
 import android.util.Log
@@ -62,12 +64,12 @@ class LoginFragment : Fragment() {
     }
 
     private fun configurationGoogleSignIn() {
-            val gso =
-                GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                    .requestIdToken(getString(R.string.default_web_client_id))
-                    .requestEmail()
-                    .build()
-            googleSignInClient = context?.let { GoogleSignIn.getClient(it, gso) }!!
+        val gso =
+            GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.default_web_client_id))
+                .requestEmail()
+                .build()
+        googleSignInClient = context?.let { GoogleSignIn.getClient(it, gso) }!!
 
     }
 
@@ -93,6 +95,12 @@ class LoginFragment : Fragment() {
                 return@observe
             } else {
                 loggedInUser = it
+
+                val sharedPreferences = context?.getSharedPreferences("MyPref", Context.MODE_PRIVATE)
+                val editor= sharedPreferences?.edit()
+                editor?.putString("loggedUserUID", loggedInUser?.uid)
+                editor?.apply()
+
                 val homeDashboardFragment = HomeDashboardFragment()
                 val bundle = Bundle()
                 bundle.putString("userId", it.uid)
@@ -143,7 +151,7 @@ class LoginFragment : Fragment() {
     private fun setRegisterTextViewListeners() {
         registerAccountTextView?.setOnClickListener {
             Toast.makeText(context, "Navigating To Register", Toast.LENGTH_SHORT).show()
-             val registerFragment = RegisterFragment()
+            val registerFragment = RegisterFragment()
             requireActivity().supportFragmentManager.beginTransaction().replace(R.id.activity_main_nav_host_fragment,
                 registerFragment).addToBackStack("registerFragment").commit()
         }

@@ -5,8 +5,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
-import androidx.core.graphics.green
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.observe
@@ -24,7 +24,7 @@ import com.bridgelabz.photomedia.ui.searchPage.view.SearchUserFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.firebase.auth.FirebaseUser
 
-class HomeDashboardFragment : Fragment() {
+class HomeDashboardFragment : Fragment(), PhotoAdapter.OnClickedListener {
 
     private var photoAdapter: PhotoAdapter? = null
     private var photoRecyclerView: RecyclerView? = null
@@ -34,7 +34,7 @@ class HomeDashboardFragment : Fragment() {
     private var loginViewModel: LoginViewModel? = null
     private var loggedAuthUser: FirebaseUser? = null
     private var loggedUser: User? = null
-
+    private var likedPost: ImageView? = null
     private var uid: String? = null
     private var postList: List<Post>? = ArrayList()
 
@@ -94,6 +94,30 @@ class HomeDashboardFragment : Fragment() {
 
             }
         }
+
+        postViewModel?.isPostLiked?.observe(viewLifecycleOwner) {
+            if (it == null) {
+                return@observe
+            }
+            when (it) {
+                true -> {
+                    loggedUser?.following?.let { it1 -> postViewModel?.fetchAllPostByUserId(it1) }
+                    initPostRecyclerView()
+                }
+            }
+        }
+
+        postViewModel?.isPostDisliked?.observe(viewLifecycleOwner) {
+            if (it == null) {
+                return@observe
+            }
+            when (it) {
+                true -> {
+                    loggedUser?.following?.let { it1 -> postViewModel?.fetchAllPostByUserId(it1) }
+                    initPostRecyclerView()
+                }
+            }
+        }
     }
 
     private fun setbottomNavigationBarListeners() {
@@ -103,9 +127,9 @@ class HomeDashboardFragment : Fragment() {
                     return@setOnNavigationItemSelectedListener true
                 }
 
-                R.id.search_user ->{
+                R.id.search -> {
                     requireActivity().supportFragmentManager.beginTransaction()
-                        .replace(R.id.activity_main_nav_host_fragment,SearchUserFragment())
+                        .replace(R.id.activity_main_nav_host_fragment, SearchUserFragment())
                         .addToBackStack("")
                         .commit()
                     Toast.makeText(context, "Search Users", Toast.LENGTH_SHORT).show()
@@ -123,7 +147,8 @@ class HomeDashboardFragment : Fragment() {
                 }
                 R.id.nav_profile -> {
                     requireActivity().supportFragmentManager.beginTransaction()
-                        .replace(R.id.activity_main_nav_host_fragment, ProfileFragment()).addToBackStack("")
+                        .replace(R.id.activity_main_nav_host_fragment, ProfileFragment())
+                        .addToBackStack("")
                         .commit()
                     Toast.makeText(context, "Navigate to profile page", Toast.LENGTH_SHORT).show()
                     return@setOnNavigationItemSelectedListener true
@@ -143,8 +168,18 @@ class HomeDashboardFragment : Fragment() {
     private fun initPostRecyclerView() {
         Log.i("Posts", "$postList")
         photoAdapter = PhotoAdapter(postList.orEmpty(), loggedAuthUser?.uid.orEmpty())
+        photoAdapter?.setOnClickListener(this)
         photoRecyclerView?.adapter = photoAdapter
         photoRecyclerView?.layoutManager = LinearLayoutManager(context)
+    }
+
+    override fun onLikeButtonClickedListener(view: View, position: Int) {
+        val currentPost = postList?.get(position)
+        if (currentPost?.likedBy?.contains(loggedAuthUser?.uid)!!) {
+            postViewModel?.dislikePost(currentPost.postId, loggedAuthUser?.uid.orEmpty())
+        } else {
+            postViewModel?.likePost(currentPost.postId, loggedAuthUser?.uid.orEmpty())
+        }
     }
 
 }

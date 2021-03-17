@@ -7,4 +7,6 @@ interface IPostRepository {
     fun uploadImage(imageFileName: String, imageUri: Uri, listener: (Uri?) -> Unit)
     fun uploadPost(post: Post, listener: (Boolean) -> Unit)
     fun fetchAllPostByUserIds(userIds: List<String>, listener: (List<Post>) -> Unit)
+    fun likePost(postId: String, currentLoggedInUserId: String, listener: (Boolean) -> Unit)
+    fun dislikePost(postId: String, currentLoggedInUserId: String, listener: (Boolean) -> Unit)
 }

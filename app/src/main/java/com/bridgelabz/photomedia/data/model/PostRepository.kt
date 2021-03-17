@@ -3,6 +3,7 @@ package com.bridgelabz.photomedia.data.model
 import android.net.Uri
 import android.util.Log
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
 import com.google.firebase.storage.FirebaseStorage
@@ -58,12 +59,14 @@ class PostRepository() : IPostRepository {
     }
 
     override fun fetchAllPostByUserIds(userIds: List<String>, listener: (List<Post>) -> Unit) {
-        fireStore.collection("POST_COLLECTION").whereIn("userId", userIds).orderBy("createdAt",
-            Query.Direction.DESCENDING)
+        fireStore.collection("POST_COLLECTION").whereIn("userId", userIds).orderBy(
+            "createdAt",
+            Query.Direction.DESCENDING
+        )
             .get()
             .addOnCompleteListener {
                 if (it.isSuccessful) {
-                    val posts :List<Post> = ArrayList(it.result!!.toObjects(Post::class.java))
+                    val posts: List<Post> = ArrayList(it.result!!.toObjects(Post::class.java))
                     Log.i("Fetched Documents", "$posts")
                     listener(posts)
                 } else if (it.isCanceled) {
@@ -71,5 +74,25 @@ class PostRepository() : IPostRepository {
                     Log.e("Exception caught", "${it.exception}")
                 }
             }
+    }
+
+    override fun likePost(postId: String, currentLoggedInUserId:String, listener: (Boolean) -> Unit) {
+        fireStore.collection("POST_COLLECTION")
+            .document(postId)
+            .update("likedBy", FieldValue.arrayUnion(currentLoggedInUserId))
+            .addOnCompleteListener {
+                listener(it.isSuccessful)
+            }
+
+    }
+
+    override fun dislikePost(postId: String, currentLoggedInUserId:String, listener: (Boolean) -> Unit) {
+        fireStore.collection("POST_COLLECTION")
+            .document(postId)
+            .update("likedBy", FieldValue.arrayRemove(currentLoggedInUserId))
+            .addOnCompleteListener {
+                listener(it.isSuccessful)
+            }
+
     }
 }

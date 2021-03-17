@@ -10,6 +10,8 @@ import com.bridgelabz.photomedia.data.model.PostRepository
 class PostViewModel : ViewModel() {
     val uploadedPostImageUri = MutableLiveData<Uri>()
     val postStatus = MutableLiveData<Boolean>()
+    val isPostLiked= MutableLiveData<Boolean>()
+    val isPostDisliked= MutableLiveData<Boolean>()
     val userPosts = MutableLiveData<List<Post>>()
     private val postRepository: IPostRepository = PostRepository()
 
@@ -33,5 +35,17 @@ class PostViewModel : ViewModel() {
        postRepository.fetchAllPostByUserIds(userIds) {
             userPosts.value = it
        }
+    }
+
+    fun likePost(postId:String, currentUserId: String) {
+        postRepository.likePost(postId, currentUserId) {
+            isPostLiked.value = it
+        }
+    }
+
+    fun dislikePost(postId:String, currentUserId: String) {
+        postRepository.dislikePost(postId, currentUserId) {
+            isPostDisliked.value = it
+        }
     }
 }

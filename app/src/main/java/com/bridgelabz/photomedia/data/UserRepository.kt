@@ -1,19 +1,20 @@
 package com.bridgelabz.photomedia.data
 
 import android.util.Log
-import com.bridgelabz.photomedia.data.model.Post
 import com.bridgelabz.photomedia.data.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.GoogleAuthProvider
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 
 class UserRepository() : IUserRepository {
-    private val EMAIL: String = "email"
-    private val USERID: String = "userid"
+
     private val USERNAME: String = "userName"
     private val FIRSTNAME: String = "firstName"
     private val LASTNAME: String = "lastName"
+    private val BIO: String = "bio"
+
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var fireStore: FirebaseFirestore
 
@@ -80,6 +81,20 @@ class UserRepository() : IUserRepository {
             }
     }
 
+   override fun updateUserDetails(
+       firstname: String,
+       lastname: String,
+       bio: String,
+       listener: (Boolean) -> Unit
+   ) {
+        fireStore.collection("USER_COLLECTION").document(firebaseAuth?.currentUser.uid)
+            .update("firstName",firstname,
+                    "lastName",lastname,
+            "bio",bio).addOnCompleteListener {
+                listener(it.isSuccessful)
+            }
+    }
+
     override fun fetchUserByUserId(userId: String, listener: (User?) -> Unit) {
         fireStore.collection("USER_COLLECTION").document(userId).get().addOnCompleteListener {
             if (it.isSuccessful) {
@@ -97,9 +112,68 @@ class UserRepository() : IUserRepository {
         }
     }
 
-    override fun fetchAllUsersByUserId(listener: (List<User>) -> Unit) {
-        TODO("Not yet implemented")
+    override fun fetchAllUsers(listener: (List<User>?) -> Unit) {
+        fireStore.collection("USER_COLLECTION").get()
+            .addOnCompleteListener {
+            if (it.isSuccessful){
+                val users:List<User> = it.result!!.toObjects(User::class.java)
+                listener(users)
+            }
+            else if (it.isCanceled){
+                listener(listOf())
+            }
+        }
+
     }
 
+    override fun addFollower(
+        currentLoggedInUserId: String,
+        followToUserId:String,
+        listener: (Boolean) -> Unit
+    ){
+        fireStore.collection("USER_COLLECTION").document(followToUserId)
+            .update("followers",FieldValue.arrayUnion(currentLoggedInUserId))
+            .addOnCompleteListener {
+                listener(it.isSuccessful)
+            }
+    }
+
+    override fun followUser(
+        currentLoggedInUserId: String,
+        followedToUserId: String,
+        listener: (Boolean) -> Unit
+        ){
+        fireStore.collection("USER_COLLECTION").document(currentLoggedInUserId)
+            .update("following",FieldValue.arrayUnion(followedToUserId))
+            .addOnCompleteListener {
+                listener(it.isSuccessful)
+            }
+    }
+
+    override fun removeFollower(
+        currentLoggedInUserId: String,
+        followToUserId: String,
+        listener: (Boolean) -> Unit
+        ){
+        fireStore.collection("USER_COLLECTION")
+            .document(followToUserId)
+            .update("followers",FieldValue.arrayRemove(currentLoggedInUserId))
+            .addOnCompleteListener {
+                listener(it.isSuccessful)
+            }
+    }
+
+    override fun unfollowUser(
+        currentLoggedInUserId: String,
+        followedToUserId: String,
+        listener: (Boolean) -> Unit
+    ){
+        fireStore.collection("USER_COLLECTION")
+            .document(currentLoggedInUserId)
+            .update("following",FieldValue.arrayRemove(followedToUserId))
+            .addOnCompleteListener {
+                listener(it.isSuccessful)
+            }
+    }
 
 }
